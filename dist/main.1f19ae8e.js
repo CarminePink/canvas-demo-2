@@ -117,79 +117,97 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/bundle-url.js":[function(require,module,exports) {
-var bundleURL = null;
+})({"main.js":[function(require,module,exports) {
+var canvas = document.getElementById("canvas");
+canvas.width = document.documentElement.clientWidth;
+canvas.height = document.documentElement.clientHeight;
+var ctx = canvas.getContext("2d");
+var colorRed = document.querySelector("#colorRed");
+var colorBlack = document.querySelector("#colorBlack");
+var lineStyle = document.querySelector("#lineStyle");
+var lineBig = document.querySelector("#lineBig");
+var clear = document.querySelector("#clear");
+var eraser = document.querySelector("#eraser");
+ctx.fillStyle = "black";
+ctx.strokeStyle = "none";
+ctx.lineWidth = 10;
+ctx.lineCap = "round"; //让线条之间连接圆润
 
-function getBundleURLCached() {
-  if (!bundleURL) {
-    bundleURL = getBundleURL();
-  }
+var painting = false;
+var last;
 
-  return bundleURL;
-}
+colorRed.onclick = function () {
+  ctx.strokeStyle = "red";
+};
 
-function getBundleURL() {
-  // Attempt to find the URL of the current script and use that as the base URL
-  try {
-    throw new Error();
-  } catch (err) {
-    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+colorBlack.onclick = function () {
+  ctx.strokeStyle = "black";
+};
 
-    if (matches) {
-      return getBaseURL(matches[0]);
-    }
-  }
+lineStyle.onclick = function () {
+  ctx.lineWidth = 3;
+};
 
-  return '/';
-}
+lineBig.onclick = function () {
+  ctx.lineWidth = 10;
+};
 
-function getBaseURL(url) {
-  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)\/[^/]+$/, '$1') + '/';
-}
+clear.onclick = function () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
 
-exports.getBundleURL = getBundleURLCached;
-exports.getBaseURL = getBaseURL;
-},{}],"C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/css-loader.js":[function(require,module,exports) {
-var bundle = require('./bundle-url');
+eraser.onclick = function () {
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = 10;
+};
 
-function updateLink(link) {
-  var newLink = link.cloneNode();
+var isTouchDevice = "ontouchstart" in document.documentElement;
 
-  newLink.onload = function () {
-    link.remove();
+if (isTouchDevice) {
+  canvas.ontouchstart = function (e) {
+    console.log(e);
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    last = [e.clientX, e.clientY];
   };
 
-  newLink.href = link.href.split('?')[0] + '?' + Date.now();
-  link.parentNode.insertBefore(newLink, link.nextSibling);
+  canvas.ontouchmove = function (e) {
+    var x = e.touches[0].clientX;
+    var y = e.touches[0].clientY;
+    drawLine(last[0], last[1], x, y);
+    last = [x, y];
+  };
+} else {
+  canvas.onmousedown = function (e) {
+    console.log(e);
+    painting = true;
+    last = [e.clientX, e.clientY];
+    console.log(last);
+  };
+
+  canvas.onmousemove = function (e) {
+    if (painting === true) {
+      drawLine(last[0], last[1], e.clientX, e.clientY);
+      last = [e.clientX, e.clientY];
+    } else {}
+  };
+
+  canvas.onmouseup = function () {
+    painting = false;
+  };
 }
 
-var cssTimeout = null;
-
-function reloadCSS() {
-  if (cssTimeout) {
-    return;
-  }
-
-  cssTimeout = setTimeout(function () {
-    var links = document.querySelectorAll('link[rel="stylesheet"]');
-
-    for (var i = 0; i < links.length; i++) {
-      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
-        updateLink(links[i]);
-      }
-    }
-
-    cssTimeout = null;
-  }, 50);
+function drawLine(x1, y1, x2, y2) {
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
 }
 
-module.exports = reloadCSS;
-},{"./bundle-url":"C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/bundle-url.js"}],"style.css":[function(require,module,exports) {
-var reloadCSS = require('_css_loader');
-
-module.hot.dispose(reloadCSS);
-module.hot.accept(reloadCSS);
-},{"_css_loader":"C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/css-loader.js"}],"C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+window.onresize = function () {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}; //监听当前窗口的resize事件，当窗口大小改变后会触发clearRect方法清空画板
+},{}],"C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -392,5 +410,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js"], null)
-//# sourceMappingURL=/style.e308ff8e.js.map
+},{}]},{},["C:/Users/76968/AppData/Local/Yarn/Data/global/node_modules/parcel/src/builtins/hmr-runtime.js","main.js"], null)
+//# sourceMappingURL=/main.1f19ae8e.js.map
